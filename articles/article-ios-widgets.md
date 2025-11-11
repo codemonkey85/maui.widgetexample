@@ -4,7 +4,7 @@ _This is a guest blog from [Toine de Boer](https://www.linkedin.com/in/toinedebo
 
 I'm a .NET developer primarily focused on .NET MAUI to ASP.NET backend services. Because I recently have worked a lot with Widgets and encountered many obstacles and very limited documentation in the initial phase, I decided to write this article to show that it is absolutely possible to build complete Widgets with .NET MAUI. And to do so in a professional way comparable to using the native development environment, without having to fear that everything might break with every new build or update.
 
-This isn't a hands-on tutorial; instead, these are the biggest and most important parts in order of how to tackle the biggest obstacles when building an iOS widget. It's advisable to have some experience with MAUI or Xamarin, and access to macOS is required, as creating an iOS Widget without macOS unfortunately isn't possible. You can cherry‑pick what you think you need, but I recommend reading from start to finish or you may miss small details that keep the Widget from working. The text starts with creating a simple static widget, and ends with a basic system for a fully interactive widget.
+I'll go through the primary challenges you'll face when creating an iOS widget, supported by a fully developed and working example source project. It's advisable to have some experience with MAUI or Xamarin, and access to macOS is required, as creating an iOS Widget without macOS unfortunately isn't possible. You can cherry‑pick what you think you need, but I recommend reading from start to finish or you may miss small details that keep the Widget from working. The text starts with creating a simple static widget, and ends with a basic system for a fully interactive widget.
 
 Source of a fully working Widget on
 [github > Maui.WidgetExample](https://github.com/Toine-db/Maui.WidgetExample)
@@ -19,6 +19,11 @@ iOS Widgets are standalone apps that are linked to a host app. For simplicity I 
 ## Prerequisites
 
 Before we begin we need a few things from Apple's developer console. Besides the Bundle ID of your existing app you also need a Bundle ID for your Widget. If your app uses `com.enbyin.WidgetExample` then conventionally you append something for a Widget such as `com.enbyin.WidgetExample.WidgetExtension`. Additionally, both Bundle IDs need the App Groups capability with a dedicated group. Create a Group ID by prefixing the app Bundle ID with `group`, for example `group.enbyin.WidgetExample`.
+
+What to collect from Apple Developer Console:
+*  App Bundle ID (e.g. `com.enbyin.WidgetExample`)
+*  Widget (App) Bundle ID (e.g. `com.enbyin.WidgetExample.WidgetExtension`)
+ * Group ID (e.g. `group.enbyin.WidgetExample`)
 
 For demo purposes I created a default MAUI app targeting only iOS and Android. I set the iOS target to the newly created Bundle ID `com.enbyin.WidgetExample`. I also added a very noticeable app icon so we can easily observe if the correct icon has been used on the Widget screens.
 
@@ -297,7 +302,43 @@ struct MyWidgetView : View {
 
 On iOS, a Widget can NOT communicate with the App in the background. Any direct call brings the App to the foreground. To keep the App closed and still perform work, you can use AppIntents in the Widget to call your backend. The backend can execute the action and, if needed, send a silent push notification to the App. The App can then handle the update in the background if required. This can be done with any web service and existing push notification provider; For that reason, I've included only an illustrative SilentNotificationService as entry point in the demo code rather than a full implementation.
 
+## Create a configurable Widget
+
+Because I selected the 'Configuration App Intent' option when creating the XCode Widget extension, there is already a working system in place that allows the user to configure the widget. In the loop of creating the data model in `AppIntentTimelineProvider`, this configuration becomes available and can be processed into the data that is passed to the Widget view. It's a simple basic system that's all implemented in a `WidgetConfigurationIntent` that is specified in the `WidgetConfiguration` for the specific Widget.
+
+
+```swift
+struct MyWidget: Widget {
+   let kind: String = "MyWidget"
+
+   var body: some WidgetConfiguration {
+      AppIntentConfiguration(kind: kind, 
+      intent: ConfigurationAppIntent.self,
+      ...
+```
+
+
+Visually, there is nothing to customize in the WidgetConfigurationIntent. You only need to add '@Parameter' fields for the settings you want users to configure; the platform handles the UI automatically.
+
+```swift
+struct ConfigurationAppIntent: WidgetConfigurationIntent {
+   // title: mainly for Siri/shortcuts, keep it simple if you dont use Siri
+   static var title: LocalizedStringResource { "Configuration" }
+   // description: mainly for developers in the app intents system, users will never see this 
+   static var description: IntentDescription { "This is an example widget." } 
+
+   // An example configurable parameter.
+   @Parameter(title: "Favorite Emoji", default: "😃")
+   var favoriteEmoji: String
+}
+```
+
+
+Most built-in types can be used with @Parameter, such as String, Int, Bool, Date, etc. For more complex types like lists or custom objects, a separate type can be created that implements `AppEntity`. This is a somewhat more extensive topic that I won't cover completely here. The principle is simple: the AppEntity object is a selectable datamodel that provides its own options through an `EntityQuery`. This EntityQuery delivers a collection of AppEntity objects from which the user can choose. It's important to know that the platform can iterate through the different functions of the EntityQuery multiple times, and again these functions have difficulty exchanging data with eachother. My advise is to use local storage (UserDefaults) to cache and exchange data between the different functions.
+
 ## Streamlining widget development
 
-With the complete interactive widget in place, the next step will be implementing your logic and refining the widget's layout and styling. Ideally all logic goes into the MAUI app so you can reuse it on other platforms too. Unfortunately you can't avoid implementing some parts in Swift, such as handling storage, building views, or some small communication with your backend. The transition from C# to Swift has a small learning curve; that's why I advise to use VS Code and to pair-program with Copilot. Copilot will not make everything perfect without errors in a single run, but it will give you a great sparring partner and will help you get a lot done quickly. Combine this with an open XCode at the same time to build and test frequently to catch issues early. Do this with the Widget opened in a XCode Canvas view using #preview data, so you can see visual changes instantly after every build.
+With the complete interactive widget in place, the next step will be implementing your logic and refining the widget's layout and styling. Ideally all logic goes into the MAUI app so you can reuse it on other platforms too. Unfortunately you can't avoid implementing some parts in Swift, such as handling storage, building views, or some small communication with your backend. 
+
+The transition from C# to Swift has a small learning curve in my opinion; that's why I advise to use VS Code and to pair-program with Copilot to be as C# to Swift translator. Copilot will not make everything perfect in a single run and not without errors, but it will give you a great sparring partner and will help you get a lot done quickly. Combine this with an open XCode at the same time to build and test frequently to catch issues early. Do this with the Widget opened in a XCode Canvas view using #preview data, so you can see visual changes instantly after every build.
 

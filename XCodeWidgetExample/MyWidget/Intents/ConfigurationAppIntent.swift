@@ -1,4 +1,4 @@
-//
+﻿//
 //  AppIntent.swift
 //  MyWidget
 //
@@ -9,8 +9,10 @@ import WidgetKit
 import AppIntents
 
 struct ConfigurationAppIntent: WidgetConfigurationIntent {
+     // title: mainly for Siri/shortcuts, keep it simple if you dont use Siri
     static var title: LocalizedStringResource { "Configuration" }
-    static var description: IntentDescription { "This is an example widget." }
+    // description: mainly for developers in the app intents system, users will never see this 
+    static var description: IntentDescription { "This is an example widget." } 
 
     // An example configurable parameter.
     @Parameter(title: "Favorite Emoji", default: "😃")
