@@ -6,8 +6,12 @@ I'm a .NET developer primarily focused on .NET MAUI to ASP.NET backend services.
 
 I'll go through the primary challenges you'll face when creating an iOS widget, supported by a fully developed and working example source project. It's advisable to have some experience with MAUI or Xamarin, and access to macOS is required, as creating an iOS Widget without macOS unfortunately isn't possible. You can cherry‑pick what you think you need, but I recommend reading from start to finish or you may miss small details that keep the Widget from working. The text starts with creating a simple static widget, and ends with a basic system for a fully interactive widget.
 
-Source of a fully working Widget on
+
+To help you get started quickly, I have created a fully functional interactive widget, which is available on
 [github > Maui.WidgetExample](https://github.com/Toine-db/Maui.WidgetExample)
+
+![Screenshot of the Maui.WidgetExample project](images/iphone-widgetexample.png){width=250}
+
 
 ---
 **NOTE**
