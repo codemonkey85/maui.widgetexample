@@ -340,9 +340,12 @@ struct ConfigurationAppIntent: WidgetConfigurationIntent {
 
 Most built-in types can be used with @Parameter, such as String, Int, Bool, Date, etc. For more complex types like lists or custom objects, a separate type can be created that implements `AppEntity`. This is a somewhat more extensive topic that I won't cover completely here. The principle is simple: the AppEntity object is a selectable datamodel that provides its own options through an `EntityQuery`. This EntityQuery delivers a collection of AppEntity objects from which the user can choose. It's important to know that the platform can iterate through the different functions of the EntityQuery multiple times, and again these functions have difficulty exchanging data with eachother. My advise is to use local storage (UserDefaults) to cache and exchange data between the different functions.
 
-## Streamlining widget development
+## Wrapping Up and Practical Tips
 
-With the complete interactive widget in place, the next step will be implementing your logic and refining the widget's layout and styling. Ideally all logic goes into the MAUI app so you can reuse it on other platforms too. Unfortunately you can't avoid implementing some parts in Swift, such as handling storage, building views, or some small communication with your backend. 
+With the interactive widget fully implemented, the next step naturally becomes refining your logic, layout, and overall design. While most of your core logic can remain inside your .NET MAUI app for reuse across platforms, a bit of Swift will always be required for widget specific tasks like handling storage, building views, or performing lightweight backend actions. Here are some final tips to help you get up to speed during the transition from C# to Swift:
 
-The transition from C# to Swift has a small learning curve in my opinion; that's why I advise to use VS Code and to pair-program with Copilot to be as C# to Swift translator. Copilot will not make everything perfect in a single run and not without errors, but it will give you a great sparring partner and will help you get a lot done quickly. Combine this with an open XCode at the same time to build and test frequently to catch issues early. Do this with the Widget opened in a XCode Canvas view using #preview data, so you can see visual changes instantly after every build.
+* Use VS Code to pair-program with Copilot when creating your Swift code.
+* Keep Xcode open for rapid build and preview cycles to catch issues early.
+* Open the Canvas view in Xcode and use #preview data so you can see visual changes quickly.
 
+If you're interested in taking your widget skills to Android, good news: an article on building Android Widgets with .NET MAUI is coming soon.
